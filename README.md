@@ -1,70 +1,115 @@
-# Getting Started with Create React App
+# SpendWise: AI-Powered Expense Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+SpendWise is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+* **AI-Powered Transactions:** Add expenses and income by typing in plain English or Bahasa Indonesia (e.g., "beli kopi 15k" or "monthly salary 5jt").
+* **Secure User Authentication:** Each user has their own private account, powered by Amazon Cognito.
+* **Monthly & Daily Statistics:** Visualize your financial health with charts for monthly income vs. expenses and daily spending breakdowns.
+* **Daily Transaction View:** Browse your transaction history day by day with easy navigation.
+* **Full CRUD Functionality:** Manually add, edit, or delete any transaction to ensure your records are always accurate.
+* **Localized for IDR:** All currency is displayed in Indonesian Rupiah (Rp).
 
-### `npm start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* **Frontend:** React.js, Tailwind CSS (via CDN), Recharts
+* **Backend (Serverless on AWS):**
+    * **Authentication:** Amazon Cognito
+    * **Database:** Amazon DynamoDB
+    * **API:** Amazon API Gateway
+    * **Compute:** AWS Lambda (Python)
+    * **AI/NLP:** Amazon Bedrock (Anthropic Claude models)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Structure (Frontend)
 
-### `npm test`
+```
+/expense-tracker-app
+├── /public
+│   └── index.html      <-- Tailwind CSS CDN script is added here
+├── /src
+│   ├── /components
+│   │   ├── AddTransactionForm.js
+│   │   ├── Auth.js
+│   │   ├── Charts.js
+│   │   ├── Dashboard.js
+│   │   ├── Footer.js
+│   │   ├── Header.js
+│   │   ├── Logo.js
+│   │   ├── MonthlySummary.js
+│   │   ├── TransactionList.js
+│   │   └── TransactionModal.js
+│   ├── App.js
+│   ├── config.js       <-- AWS credentials for local development
+│   └── index.css
+├── package.json
+└── README.md
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Setup and Installation
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 1. Backend (AWS)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Before running the frontend, the AWS backend must be set up. This involves configuring several services that work together.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+**Required Services:**
 
-### `npm run eject`
+1.  **Amazon Cognito:** Create a User Pool to manage users.
+2.  **Amazon DynamoDB:** Create a `Transactions` table to store data.
+3.  **IAM:** Create a Role with permissions for Lambda to access DynamoDB and Bedrock.
+4.  **Amazon Bedrock:** Enable model access for the Anthropic Claude models.
+5.  **AWS Lambda:** Create and deploy the Python code for the six functions:
+    * `processTransactionTextFunction`
+    * `getTransactionsFunction`
+    * `getStatsFunction`
+    * `addTransactionFunction`
+    * `updateTransactionFunction`
+    * `deleteTransactionFunction`
+6.  **Amazon API Gateway:** Create a REST API with the necessary resources and methods, link them to the Lambda functions, and secure them with the Cognito authorizer.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 2. Frontend (Local Development)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repository-url>
+    cd expense-tracker-app
+    ```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-## Learn More
+3.  **Configure AWS Credentials:**
+    * Create a file named `config.js` inside the `src` folder.
+    * Paste the following code into it, replacing the placeholder values with the actual credentials from your AWS backend setup.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+    ```javascript
+    // src/config.js
+    const awsConfig = {
+        Auth: {
+            Cognito: {
+                userPoolId: 'YOUR_USER_POOL_ID',
+                userPoolClientId: 'YOUR_USER_POOL_APP_CLIENT_ID',
+            }
+        },
+        API: {
+            REST: {
+                ExpenseTrackerAPI: {
+                    endpoint: "YOUR_API_GATEWAY_INVOKE_URL",
+                    region: 'YOUR_AWS_REGION' // e.g., 'ap-southeast-1'
+                }
+            }
+        }
+    };
+    export default awsConfig;
+    ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+4.  **Run the application:**
+    ```bash
+    npm start
+    ```
+    The app will open at `http://localhost:3000`.
