@@ -2,6 +2,8 @@
 
 SpendWise is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
 
+You can try the app here `https://spendwise-pengeluaran.netlify.app`
+
 ## Features
 
 * **AI-Powered Transactions:** Add expenses and income by typing in plain English or Bahasa Indonesia (e.g., "beli kopi 15k" or "monthly salary 5jt").
@@ -113,3 +115,5 @@ Before running the frontend, the AWS backend must be set up. This involves confi
     npm start
     ```
     The app will open at `http://localhost:3000`.
+
+
