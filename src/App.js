@@ -6,6 +6,7 @@ import awsConfig from './config';
 
 import { SignInForm, SignUpForm } from './components/Auth';
 import Dashboard from './components/Dashboard';
+import Footer from './components/Footer'; // Import the Footer component
 
 Amplify.configure(awsConfig);
 
@@ -17,11 +18,8 @@ export default function App() {
   const checkUser = useCallback(async () => {
     setLoading(true);
     try {
-      // Get basic user info (ID, username)
       const { userId, username } = await getCurrentUser();
-      // FIX: Also fetch custom attributes like 'name'
       const attributes = await fetchUserAttributes();
-      // Combine all user data into a single object
       setUser({ userId, username, ...attributes });
     } catch (error) {
       setUser(null);
@@ -43,14 +41,18 @@ export default function App() {
 
   if (!user) {
     return (
-      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
-        <div className="w-full max-w-md p-4">
-          {authScreen === 'signIn' ? (
-            <SignInForm setAuthScreen={setAuthScreen} onSignIn={checkUser} />
-          ) : (
-            <SignUpForm setAuthScreen={setAuthScreen} />
-          )}
-        </div>
+      // FIX: Restructure the layout to include the footer
+      <div className="bg-gray-100 min-h-screen flex flex-col">
+        <main className="flex-grow flex items-center justify-center">
+          <div className="w-full max-w-md p-4">
+            {authScreen === 'signIn' ? (
+              <SignInForm setAuthScreen={setAuthScreen} onSignIn={checkUser} />
+            ) : (
+              <SignUpForm setAuthScreen={setAuthScreen} />
+            )}
+          </div>
+        </main>
+        <Footer />
       </div>
     );
   }
