@@ -74,8 +74,8 @@ Before running the frontend, the AWS backend must be set up. This involves confi
 
 1.  **Clone the repository:**
     ```bash
-    git clone <your-repository-url>
-    cd expense-tracker-app
+    git clone https://github.com/zaribae/spendwise-expense-tracker-app.git
+    cd spendwise-expense-tracker-app
     ```
 
 2.  **Install dependencies:**
