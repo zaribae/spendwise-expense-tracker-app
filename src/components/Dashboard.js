@@ -2,10 +2,11 @@
 import { del, get, post, put } from 'aws-amplify/api';
 import { fetchAuthSession, signOut } from 'aws-amplify/auth';
 import React, { useCallback, useEffect, useState } from 'react';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 
 import AddTransactionForm from './AddTransactionForm';
 import { DailyStats, MonthlyStats } from './Charts';
-import Footer from './Footer'; // Import the new Footer component
+import Footer from './Footer';
 import Header from './Header';
 import MonthlySummary from './MonthlySummary';
 import TransactionList from './TransactionList';
@@ -19,9 +20,19 @@ export default function Dashboard({ user }) {
     const handleSignOut = async () => {
         try {
             await signOut();
-            window.location.reload();
+            // Show a sign-out success message
+            Swal.fire({
+                icon: 'success',
+                title: 'Signed Out',
+                text: 'You have been successfully signed out.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                window.location.reload();
+            });
         } catch (error) {
             console.error('Error signing out: ', error);
+            Swal.fire('Error!', 'Could not sign out.', 'error');
         }
     };
 
@@ -44,14 +55,10 @@ export default function Dashboard({ user }) {
 
             if (Array.isArray(transData)) {
                 setTransactions(transData.sort((a, b) => new Date(b.date) - new Date(a.date)));
-            } else {
-                setTransactions([]);
-            }
+            } else { setTransactions([]); }
             if (statsData && typeof statsData === 'object') {
                 setStats(statsData);
-            } else {
-                setStats(null);
-            }
+            } else { setStats(null); }
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -62,7 +69,7 @@ export default function Dashboard({ user }) {
         fetchData();
     }, [fetchData]);
 
-    // --- NEW CRUD Functions ---
+    // --- CRUD Functions with Notifications ---
     const handleAddTransaction = async (transactionData) => {
         try {
             const authToken = await getAuthToken();
@@ -71,9 +78,11 @@ export default function Dashboard({ user }) {
                 path: '/transactions',
                 options: { headers: { Authorization: authToken }, body: transactionData }
             }).response;
-            fetchData(); // Refresh data
+            fetchData();
+            Swal.fire('Added!', 'Your transaction has been added.', 'success');
         } catch (error) {
             console.error("Error adding transaction:", error);
+            Swal.fire('Error!', 'Could not add transaction.', 'error');
         }
     };
 
@@ -85,24 +94,41 @@ export default function Dashboard({ user }) {
                 path: `/transactions/${transactionId}`,
                 options: { headers: { Authorization: authToken }, body: transactionData }
             }).response;
-            fetchData(); // Refresh data
+            fetchData();
+            Swal.fire('Updated!', 'Your transaction has been updated.', 'success');
         } catch (error) {
             console.error("Error updating transaction:", error);
+            Swal.fire('Error!', 'Could not update transaction.', 'error');
         }
     };
 
     const handleDeleteTransaction = async (transactionId) => {
-        try {
-            const authToken = await getAuthToken();
-            await del({
-                apiName: 'ExpenseTrackerAPI',
-                path: `/transactions/${transactionId}`,
-                options: { headers: { Authorization: authToken } }
-            }).response;
-            fetchData(); // Refresh data
-        } catch (error) {
-            console.error("Error deleting transaction:", error);
-        }
+        // Use SweetAlert for confirmation
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it!'
+        }).then(async (result) => {
+            if (result.isConfirmed) {
+                try {
+                    const authToken = await getAuthToken();
+                    await del({
+                        apiName: 'ExpenseTrackerAPI',
+                        path: `/transactions/${transactionId}`,
+                        options: { headers: { Authorization: authToken } }
+                    }).response;
+                    fetchData();
+                    Swal.fire('Deleted!', 'Your transaction has been deleted.', 'success');
+                } catch (error) {
+                    console.error("Error deleting transaction:", error);
+                    Swal.fire('Error!', 'Could not delete transaction.', 'error');
+                }
+            }
+        });
     };
 
     return (
@@ -139,7 +165,7 @@ export default function Dashboard({ user }) {
                     </div>
                 </div>
             </main>
-            <Footer /> {/* Add the new Footer component here */}
+            <Footer />
         </div>
     );
 }

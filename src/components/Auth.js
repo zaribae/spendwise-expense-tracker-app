@@ -1,6 +1,7 @@
 // src/components/Auth.js
 import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth';
 import React, { useState } from 'react';
+import Swal from 'sweetalert2'; // Import SweetAlert2
 import Logo from './Logo'; // Import the new Logo component
 
 function AuthCard({ title, children }) {
@@ -32,7 +33,7 @@ function InputField({ label, type, value, onChange, required = false, placeholde
 }
 
 export function SignUpForm({ setAuthScreen }) {
-    const [name, setName] = useState(''); // State for the new Full Name field
+    const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [code, setCode] = useState('');
@@ -51,7 +52,7 @@ export function SignUpForm({ setAuthScreen }) {
                 options: {
                     userAttributes: {
                         email,
-                        name // FIX: Include the new 'name' attribute
+                        name
                     },
                 }
             });
@@ -68,6 +69,12 @@ export function SignUpForm({ setAuthScreen }) {
         setLoading(true);
         try {
             await confirmSignUp({ username: email, confirmationCode: code });
+            // Show success notification
+            Swal.fire({
+                icon: 'success',
+                title: 'Registration Successful!',
+                text: 'You can now sign in with your new account.',
+            });
             setAuthScreen('signIn');
         } catch (err) {
             setError(err.message);
@@ -93,7 +100,6 @@ export function SignUpForm({ setAuthScreen }) {
     return (
         <AuthCard title="Create an Account">
             <form onSubmit={handleSignUp}>
-                {/* FIX: Add the Full Name input field */}
                 <InputField label="Full Name" type="text" value={name} onChange={(e) => setName(e.target.value)} required />
                 <InputField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <InputField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="At least 8 characters" />
@@ -122,6 +128,13 @@ export function SignInForm({ setAuthScreen, onSignIn }) {
         setLoading(true);
         try {
             await signIn({ username: email, password });
+            // Show a brief success message before calling onSignIn
+            Swal.fire({
+                icon: 'success',
+                title: 'Signed In!',
+                timer: 1500,
+                showConfirmButton: false
+            });
             onSignIn();
         } catch (err) {
             setError(err.message);

@@ -1,6 +1,6 @@
 // src/components/TransactionList.js
 import React, { useMemo, useState } from 'react';
-import TransactionModal from './TransactionModal'; // Import the new modal
+import TransactionModal from './TransactionModal';
 
 const toYMD = (date) => {
     const d = new Date(date);
@@ -15,7 +15,6 @@ export default function TransactionList({ transactions, onAdd, onUpdate, onDelet
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
 
-    // FIX: Create a new Date object before modifying it to prevent double updates.
     const handlePrevDay = () => {
         const newDate = new Date(selectedDate);
         newDate.setDate(newDate.getDate() - 1);
@@ -52,10 +51,9 @@ export default function TransactionList({ transactions, onAdd, onUpdate, onDelet
         closeModal();
     };
 
+    // FIX: Removed window.confirm. Confirmation is now handled in the parent component.
     const handleDelete = (transactionId) => {
-        if (window.confirm("Are you sure you want to delete this transaction?")) {
-            onDelete(transactionId);
-        }
+        onDelete(transactionId);
     };
 
     const filteredTransactions = useMemo(() => {
