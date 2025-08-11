@@ -6,7 +6,7 @@ import awsConfig from './config';
 
 import { SignInForm, SignUpForm } from './components/Auth';
 import Dashboard from './components/Dashboard';
-import Footer from './components/Footer'; // Import the Footer component
+import LandingPage from './components/LandingPage'; // Import the new LandingPage component
 
 Amplify.configure(awsConfig);
 
@@ -39,23 +39,19 @@ export default function App() {
     );
   }
 
+  // If the user is not logged in, show the new LandingPage
   if (!user) {
     return (
-      // FIX: Restructure the layout to include the footer
-      <div className="bg-gray-100 min-h-screen flex flex-col">
-        <main className="flex-grow flex items-center justify-center">
-          <div className="w-full max-w-md p-4">
-            {authScreen === 'signIn' ? (
-              <SignInForm setAuthScreen={setAuthScreen} onSignIn={checkUser} />
-            ) : (
-              <SignUpForm setAuthScreen={setAuthScreen} />
-            )}
-          </div>
-        </main>
-        <Footer />
-      </div>
+      <LandingPage>
+        {authScreen === 'signIn' ? (
+          <SignInForm setAuthScreen={setAuthScreen} onSignIn={checkUser} />
+        ) : (
+          <SignUpForm setAuthScreen={setAuthScreen} />
+        )}
+      </LandingPage>
     );
   }
 
+  // If the user is logged in, show the Dashboard
   return <Dashboard user={user} />;
 }
