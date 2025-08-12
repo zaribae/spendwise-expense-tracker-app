@@ -15,46 +15,21 @@ export default function TransactionList({ transactions, onAdd, onUpdate, onDelet
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingTransaction, setEditingTransaction] = useState(null);
 
-    const handlePrevDay = () => {
-        const newDate = new Date(selectedDate);
-        newDate.setDate(newDate.getDate() - 1);
-        setSelectedDate(newDate);
-    };
-    const handleNextDay = () => {
-        const newDate = new Date(selectedDate);
-        newDate.setDate(newDate.getDate() + 1);
-        setSelectedDate(newDate);
-    };
+    const handlePrevDay = () => setSelectedDate(d => { const n = new Date(d); n.setDate(n.getDate() - 1); return n; });
+    const handleNextDay = () => setSelectedDate(d => { const n = new Date(d); n.setDate(n.getDate() + 1); return n; });
     const handleGoToToday = () => setSelectedDate(new Date());
 
-    const openAddModal = () => {
-        setEditingTransaction(null);
-        setIsModalOpen(true);
-    };
-
-    const openEditModal = (transaction) => {
-        setEditingTransaction(transaction);
-        setIsModalOpen(true);
-    };
-
-    const closeModal = () => {
-        setIsModalOpen(false);
-        setEditingTransaction(null);
-    };
+    const openAddModal = () => { setEditingTransaction(null); setIsModalOpen(true); };
+    const openEditModal = (transaction) => { setEditingTransaction(transaction); setIsModalOpen(true); };
+    const closeModal = () => { setIsModalOpen(false); setEditingTransaction(null); };
 
     const handleSave = (data, transactionId) => {
-        if (transactionId) {
-            onUpdate(data, transactionId);
-        } else {
-            onAdd(data);
-        }
+        if (transactionId) onUpdate(data, transactionId);
+        else onAdd(data);
         closeModal();
     };
 
-    // FIX: Removed window.confirm. Confirmation is now handled in the parent component.
-    const handleDelete = (transactionId) => {
-        onDelete(transactionId);
-    };
+    const handleDelete = (transactionId) => onDelete(transactionId);
 
     const filteredTransactions = useMemo(() => {
         const selectedDateString = toYMD(selectedDate);
@@ -65,39 +40,32 @@ export default function TransactionList({ transactions, onAdd, onUpdate, onDelet
 
     return (
         <>
-            {isModalOpen && (
-                <TransactionModal
-                    transaction={editingTransaction}
-                    onSave={handleSave}
-                    onClose={closeModal}
-                    selectedDate={toYMD(selectedDate)}
-                />
-            )}
-            <div className="bg-white p-6 rounded-xl shadow-md">
+            {isModalOpen && <TransactionModal transaction={editingTransaction} onSave={handleSave} onClose={closeModal} selectedDate={toYMD(selectedDate)} />}
+            <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
                 <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
-                    <h3 className="text-xl font-bold text-gray-800">Daily Transactions</h3>
+                    <h3 className="text-xl font-bold text-slate-800">Daily Transactions</h3>
                     <div className="flex items-center space-x-2">
-                        <button onClick={handlePrevDay} className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">‹ Prev</button>
-                        {!isToday && <button onClick={handleGoToToday} className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300">Today</button>}
-                        <button onClick={handleNextDay} disabled={isToday} className="px-3 py-1 bg-gray-200 rounded-md hover:bg-gray-300 disabled:opacity-50">Next ›</button>
-                        <button onClick={openAddModal} className="px-3 py-1 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Add Manually</button>
+                        <button onClick={handlePrevDay} className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">‹ Prev</button>
+                        {!isToday && <button onClick={handleGoToToday} className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">Today</button>}
+                        <button onClick={handleNextDay} disabled={isToday} className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 disabled:opacity-50 transition-colors">Next ›</button>
+                        <button onClick={openAddModal} className="px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors shadow-sm">Add Manually</button>
                     </div>
                 </div>
 
-                <h4 className="text-lg font-semibold text-center text-indigo-600 mb-4">
+                <h4 className="text-lg font-semibold text-center text-blue-500 mb-4">
                     {new Intl.DateTimeFormat('en-US', { dateStyle: 'full' }).format(selectedDate)}
                 </h4>
 
                 <div className="space-y-3">
                     {filteredTransactions.length > 0 ? (
                         filteredTransactions.map(t => (
-                            <div key={t.transactionId} className="flex justify-between items-center p-3 rounded-lg border border-gray-200">
+                            <div key={t.transactionId} className="flex justify-between items-center p-3 rounded-lg border border-slate-200 hover:bg-slate-50 transition-colors">
                                 <div>
-                                    <p className="font-semibold text-gray-800">{t.description || t.category}</p>
+                                    <p className="font-semibold text-slate-800">{t.description || t.category}</p>
                                     <p className="text-sm text-gray-500">{t.category}</p>
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                    <p className={`font-bold text-lg ${t.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
+                                    <p className={`font-bold text-lg ${t.type === 'income' ? 'text-emerald-500' : 'text-red-600'}`}>
                                         {t.type === 'income' ? '+' : '-'}Rp{new Intl.NumberFormat('id-ID').format(t.amount)}
                                     </p>
                                     <div className="flex space-x-2">

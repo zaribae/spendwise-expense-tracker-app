@@ -6,8 +6,9 @@ import awsConfig from './config';
 
 import { SignInForm, SignUpForm } from './components/Auth';
 import Dashboard from './components/Dashboard';
-import LandingPage from './components/LandingPage'; // Import the new LandingPage component
+import LandingPage from './components/LandingPage';
 
+// No longer need ThemeProvider
 Amplify.configure(awsConfig);
 
 export default function App() {
@@ -33,13 +34,12 @@ export default function App() {
 
   if (loading) {
     return (
-      <div className="bg-gray-100 min-h-screen flex items-center justify-center">
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center text-gray-600">
         <p>Loading...</p>
       </div>
     );
   }
 
-  // If the user is not logged in, show the new LandingPage
   if (!user) {
     return (
       <LandingPage>
@@ -52,6 +52,5 @@ export default function App() {
     );
   }
 
-  // If the user is logged in, show the Dashboard
   return <Dashboard user={user} />;
 }

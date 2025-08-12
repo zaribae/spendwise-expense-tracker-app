@@ -1,16 +1,16 @@
 // src/components/Auth.js
 import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth';
 import React, { useState } from 'react';
-import Swal from 'sweetalert2'; // Import SweetAlert2
-import Logo from './Logo'; // Import the new Logo component
+import Swal from 'sweetalert2';
+import Logo from './Logo';
 
 function AuthCard({ title, children }) {
     return (
-        <div className="bg-white shadow-md rounded-xl p-8">
+        <div className="bg-white shadow-lg rounded-xl p-8 border border-slate-200">
             <div className="mb-8 flex justify-center">
                 <Logo />
             </div>
-            <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">{title}</h2>
+            <h2 className="text-2xl font-bold text-center text-slate-800 mb-6">{title}</h2>
             {children}
         </div>
     );
@@ -19,9 +19,9 @@ function AuthCard({ title, children }) {
 function InputField({ label, type, value, onChange, required = false, placeholder = '' }) {
     return (
         <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">{label}</label>
+            <label className="block text-gray-600 text-sm font-bold mb-2">{label}</label>
             <input
-                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                className="shadow-inner appearance-none border border-slate-300 rounded w-full py-2 px-3 bg-slate-50 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500"
                 type={type}
                 value={value}
                 onChange={onChange}
@@ -49,12 +49,7 @@ export function SignUpForm({ setAuthScreen }) {
             await signUp({
                 username: email,
                 password,
-                options: {
-                    userAttributes: {
-                        email,
-                        name
-                    },
-                }
+                options: { userAttributes: { email, name } },
             });
             setStep(2);
         } catch (err) {
@@ -69,12 +64,7 @@ export function SignUpForm({ setAuthScreen }) {
         setLoading(true);
         try {
             await confirmSignUp({ username: email, confirmationCode: code });
-            // Show success notification
-            Swal.fire({
-                icon: 'success',
-                title: 'Registration Successful!',
-                text: 'You can now sign in with your new account.',
-            });
+            Swal.fire({ icon: 'success', title: 'Registration Successful!', text: 'You can now sign in.' });
             setAuthScreen('signIn');
         } catch (err) {
             setError(err.message);
@@ -89,7 +79,7 @@ export function SignUpForm({ setAuthScreen }) {
                 <form onSubmit={handleConfirmSignUp}>
                     <InputField label="Confirmation Code" type="text" value={code} onChange={(e) => setCode(e.target.value)} required />
                     {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                    <button type="submit" disabled={loading} className="w-full bg-green-500 text-white p-2 rounded-lg hover:bg-green-600 disabled:bg-gray-400 mt-4">
+                    <button type="submit" disabled={loading} className="w-full bg-emerald-500 text-white p-2 rounded-lg hover:bg-emerald-600 disabled:bg-gray-400 mt-4 transition-colors">
                         {loading ? 'Confirming...' : 'Confirm Account'}
                     </button>
                 </form>
@@ -104,12 +94,12 @@ export function SignUpForm({ setAuthScreen }) {
                 <InputField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <InputField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="At least 8 characters" />
                 {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 mt-4">
+                <button type="submit" disabled={loading} className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 mt-4 transition-colors">
                     {loading ? 'Creating...' : 'Create Account'}
                 </button>
                 <p className="text-center text-sm text-gray-600 mt-4">
                     Already have an account?{' '}
-                    <button onClick={() => setAuthScreen('signIn')} className="text-indigo-600 hover:underline">Sign In</button>
+                    <button type="button" onClick={() => setAuthScreen('signIn')} className="text-blue-500 hover:underline">Sign In</button>
                 </p>
             </form>
         </AuthCard>
@@ -128,13 +118,7 @@ export function SignInForm({ setAuthScreen, onSignIn }) {
         setLoading(true);
         try {
             await signIn({ username: email, password });
-            // Show a brief success message before calling onSignIn
-            Swal.fire({
-                icon: 'success',
-                title: 'Signed In!',
-                timer: 1500,
-                showConfirmButton: false
-            });
+            Swal.fire({ icon: 'success', title: 'Signed In!', timer: 1500, showConfirmButton: false });
             onSignIn();
         } catch (err) {
             setError(err.message);
@@ -148,12 +132,12 @@ export function SignInForm({ setAuthScreen, onSignIn }) {
                 <InputField label="Email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
                 <InputField label="Password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-                <button type="submit" disabled={loading} className="w-full bg-indigo-600 text-white p-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 mt-4">
+                <button type="submit" disabled={loading} className="w-full bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 mt-4 transition-colors">
                     {loading ? 'Signing In...' : 'Sign In'}
                 </button>
                 <p className="text-center text-sm text-gray-600 mt-4">
                     Don't have an account?{' '}
-                    <button onClick={() => setAuthScreen('signUp')} className="text-indigo-600 hover:underline">Sign Up</button>
+                    <button type="button" onClick={() => setAuthScreen('signUp')} className="text-blue-500 hover:underline">Sign Up</button>
                 </p>
             </form>
         </AuthCard>
