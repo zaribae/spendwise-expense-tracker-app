@@ -72,8 +72,16 @@ export default function BudgetManager({ budgets, transactions, onSetBudget }) {
                                     {formatIDR(spent)} / {budget ? formatIDR(budget.amount) : 'Not Set'}
                                 </span>
                             </div>
-                            <div className="w-full bg-gray-200 rounded-full h-4">
-                                <div className={progressBarColor + " h-4 rounded-full"} style={{ width: `${percentage}%` }}></div>
+                            {/* Progress Bar with Percentage Text */}
+                            <div className="w-full bg-gray-200 rounded-full h-5 relative">
+                                <div className={`${progressBarColor} h-5 rounded-full flex items-center justify-center`} style={{ width: `${percentage}%` }}>
+                                    {/* Only show text if the bar is wide enough */}
+                                    {percentage > 10 && (
+                                        <span className="text-xs font-bold text-white">
+                                            {Math.round(percentage)}%
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex justify-between items-center mt-1">
                                 <span className={`text-xs ${remaining < 0 ? 'text-red-600' : 'text-gray-500'}`}>
