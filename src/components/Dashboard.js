@@ -6,6 +6,7 @@ import Swal from 'sweetalert2';
 
 import AddTransactionForm from './AddTransactionForm';
 import BudgetManager from './BudgetManager';
+import CalendarView from './CalendarView'; // Import the new CalendarView component
 import { MonthlyStats } from './Charts';
 import Footer from './Footer';
 import Header from './Header';
@@ -14,7 +15,9 @@ import TransactionHistory from './TransactionHistory';
 import TransactionList from './TransactionList';
 import UserProfile from './UserProfile';
 
+
 // Icons for navigation
+const CalendarIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>;
 const OverviewIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" /></svg>;
 const HistoryIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const BudgetIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 4h4m5 6H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2z" /></svg>;
@@ -147,6 +150,7 @@ export default function Dashboard({ user }) {
                     <aside className="md:col-span-1">
                         <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200 space-y-2">
                             <NavButton tabName="overview" icon={<OverviewIcon />}>Overview</NavButton>
+                            <NavButton tabName="calendar" icon={<CalendarIcon />}>Calendar</NavButton>
                             <NavButton tabName="history" icon={<HistoryIcon />}>History</NavButton>
                             <NavButton tabName="budget" icon={<BudgetIcon />}>Budgeting</NavButton>
                             <NavButton tabName="profile" icon={<ProfileIcon />}>Profile</NavButton>
@@ -169,6 +173,7 @@ export default function Dashboard({ user }) {
                                 />
                             </div>
                         )}
+                        {activeTab === 'calendar' && <CalendarView transactions={transactions} />}
                         {activeTab === 'history' && (
                             <TransactionHistory
                                 transactions={transactions}
