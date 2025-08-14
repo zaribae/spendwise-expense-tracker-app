@@ -1,6 +1,6 @@
 // src/components/Dashboard.js
 import { del, get, post, put } from 'aws-amplify/api';
-import { fetchAuthSession, signOut } from 'aws-amplify/auth';
+import { fetchAuthSession, signOut, updateUserAttribute } from 'aws-amplify/auth';
 import React, { useCallback, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
@@ -133,6 +133,40 @@ export default function Dashboard({ user }) {
         }
     };
 
+    const handleUpdateSettings = async (settings) => {
+        try {
+            await updateUserAttribute({
+                userAttribute: {
+                    attributeKey: 'custom:payday',
+                    value: String(settings.payday)
+                }
+            });
+            // Refresh all data to reflect the new cycle
+            fetchData();
+            Swal.fire('Settings Saved!', 'Your budget cycle has been updated.', 'success');
+        } catch (error) {
+            console.error("Error updating settings:", error);
+            Swal.fire('Error!', 'Could not save settings.', 'error');
+        }
+    };
+
+    const handleDeleteBudget = async (monthCategory) => {
+        try {
+            const authToken = await getAuthToken();
+            await del({
+                apiName: 'ExpenseTrackerAPI',
+                path: `/budgets/${monthCategory}`,
+                options: { headers: { Authorization: authToken } }
+            }).response;
+            fetchData(); // Refresh data
+            Swal.fire('Budget Reset!', 'The budget for this category has been unset.', 'success');
+        } catch (error) {
+            console.error("Error deleting budget:", error);
+            Swal.fire('Error!', 'Could not reset budget.', 'error');
+        }
+    };
+
+
     const NavButton = ({ tabName, icon, children }) => (
         <button
             onClick={() => setActiveTab(tabName)}
@@ -160,7 +194,8 @@ export default function Dashboard({ user }) {
                         {activeTab === 'overview' && (
                             <div className="space-y-8">
                                 <AddTransactionForm onTransactionAdded={fetchData} />
-                                <MonthlySummary transactions={transactions} />
+                                {/* FIX: Pass the entire 'stats' object to MonthlySummary */}
+                                <MonthlySummary stats={stats} />
                                 <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
                                     <h2 className="text-2xl font-bold text-slate-800 mb-4">Financial Charts</h2>
                                     {loading ? <p>Loading charts...</p> : !stats ? <p>No data.</p> : <MonthlyStats stats={stats} />}
@@ -186,9 +221,16 @@ export default function Dashboard({ user }) {
                                 budgets={budgets}
                                 transactions={transactions}
                                 onSetBudget={handleSetBudget}
+                                onDeleteBudget={handleDeleteBudget}
                             />
                         )}
-                        {activeTab === 'profile' && <UserProfile user={user} transactions={transactions} />}
+                        {activeTab === 'profile' &&
+                            <UserProfile
+                                user={user}
+                                transactions={transactions}
+                                onUpdateSettings={handleUpdateSettings}
+                            />
+                        }
                     </main>
                 </div>
             </div>

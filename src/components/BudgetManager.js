@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Other'];
 const formatIDR = (value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`;
 
-export default function BudgetManager({ budgets, transactions, onSetBudget }) {
+export default function BudgetManager({ budgets, transactions, onSetBudget, onDeleteBudget }) {
     const [selectedMonth, setSelectedMonth] = useState(new Date().toISOString().slice(0, 7)); // YYYY-MM
 
     const monthlyExpenses = useMemo(() => {
@@ -42,6 +42,22 @@ export default function BudgetManager({ budgets, transactions, onSetBudget }) {
         });
     };
 
+    const handleResetBudget = (category) => {
+        const monthCategory = `${selectedMonth}-${category}`;
+        Swal.fire({
+            title: 'Reset Budget?',
+            text: `This will remove the budget for ${category} for this month.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, reset it!',
+            confirmButtonColor: '#DC2626', // Red
+        }).then((result) => {
+            if (result.isConfirmed) {
+                onDeleteBudget(monthCategory);
+            }
+        });
+    };
+
     return (
         <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
             <div className="flex justify-between items-center mb-4">
@@ -72,10 +88,8 @@ export default function BudgetManager({ budgets, transactions, onSetBudget }) {
                                     {formatIDR(spent)} / {budget ? formatIDR(budget.amount) : 'Not Set'}
                                 </span>
                             </div>
-                            {/* Progress Bar with Percentage Text */}
                             <div className="w-full bg-gray-200 rounded-full h-5 relative">
                                 <div className={`${progressBarColor} h-5 rounded-full flex items-center justify-center`} style={{ width: `${percentage}%` }}>
-                                    {/* Only show text if the bar is wide enough */}
                                     {percentage > 10 && (
                                         <span className="text-xs font-bold text-white">
                                             {Math.round(percentage)}%
@@ -87,9 +101,16 @@ export default function BudgetManager({ budgets, transactions, onSetBudget }) {
                                 <span className={`text-xs ${remaining < 0 ? 'text-red-600' : 'text-gray-500'}`}>
                                     {remaining < 0 ? `Overspent by ${formatIDR(Math.abs(remaining))}` : `${formatIDR(remaining)} remaining`}
                                 </span>
-                                <button onClick={() => handleSetBudget(category)} className="text-xs text-blue-600 hover:underline">
-                                    {budget ? 'Edit' : 'Set Budget'}
-                                </button>
+                                <div className="flex space-x-2">
+                                    <button onClick={() => handleSetBudget(category)} className="text-xs text-blue-600 hover:underline">
+                                        {budget ? 'Edit' : 'Set Budget'}
+                                    </button>
+                                    {budget && (
+                                        <button onClick={() => handleResetBudget(category)} className="text-xs text-red-600 hover:underline">
+                                            Reset
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     );

@@ -32,7 +32,7 @@ export default function LandingPage({ children }) {
                                     Track your spending, the <span className="text-blue-500">smart</span> way.
                                 </h1>
                                 <p className="mt-4 text-xl text-gray-600">
-                                    SpendWise uses AI to make logging your expenses and income as simple as sending a message. Get clear insights into your financial life.
+                                    DompetHub uses AI to make logging your expenses and income as simple as sending a message. Get clear insights into your financial life.
                                 </p>
                             </div>
                             <div className="space-y-8">

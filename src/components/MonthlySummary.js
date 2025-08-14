@@ -1,5 +1,5 @@
 // src/components/MonthlySummary.js
-import React, { useMemo } from 'react';
+import React from 'react';
 
 const formatIDR = (value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`;
 
@@ -8,20 +8,29 @@ const IncomeIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 
 const ExpenseIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 10v-1m0-6H9.401M14.599 12H12m0 0L9.401 16m5.198-4L12 8m0 0L9.401 4M12 20a8 8 0 100-16 8 8 0 000 16z" /></svg>;
 const BalanceIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>;
 
-export default function MonthlySummary({ transactions }) {
-    const summary = useMemo(() => {
-        const now = new Date();
-        const currentMonth = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
-        const monthlyTransactions = transactions.filter(t => t.date.startsWith(currentMonth));
-        const income = monthlyTransactions.filter(t => t.type === 'income').reduce((sum, t) => sum + t.amount, 0);
-        const expenses = monthlyTransactions.filter(t => t.type === 'expense').reduce((sum, t) => sum + t.amount, 0);
-        const balance = income - expenses;
-        return { income, expenses, balance };
-    }, [transactions]);
+export default function MonthlySummary({ stats }) {
+    // Use the new currentCycleSummary from the stats object
+    const summary = stats?.currentCycleSummary;
+
+    if (!summary) {
+        return null; // Don't render if data is not available yet
+    }
+
+    // Format dates for display
+    const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString + 'T00:00:00Z'); // Treat as UTC
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+    };
 
     return (
         <div>
-            <h2 className="text-2xl font-bold text-slate-800 mb-4">This Month's Summary</h2>
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-slate-800">Current Cycle Summary</h2>
+                <p className="text-sm text-gray-500 font-medium">
+                    {formatDate(summary.startDate)} - {formatDate(summary.endDate)}
+                </p>
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="bg-emerald-100 p-4 rounded-lg shadow-sm border border-emerald-200 flex items-center">
                     <div className="mr-4"><IncomeIcon /></div>
