@@ -5,10 +5,13 @@ import TransactionModal from './TransactionModal'; // Import the modal component
 const formatIDR = (value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`;
 const ITEMS_PER_PAGE = 10;
 
+const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Investment', 'Savings', 'Emergency Fund', 'Other'];
+
 export default function TransactionHistory({ transactions, onUpdate, onDelete }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [filterType, setFilterType] = useState('all');
     const [filterMonth, setFilterMonth] = useState('');
+    const [filterCategory, setFilterCategory] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
 
     // State for the edit modal
@@ -19,11 +22,12 @@ export default function TransactionHistory({ transactions, onUpdate, onDelete })
         return transactions
             .filter(t => filterMonth ? t.date.startsWith(filterMonth) : true)
             .filter(t => filterType === 'all' ? true : t.type === filterType)
+            .filter(t => filterCategory ? t.category === filterCategory : true)
             .filter(t =>
                 t.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 t.category.toLowerCase().includes(searchTerm.toLowerCase())
             );
-    }, [transactions, searchTerm, filterType, filterMonth]);
+    }, [transactions, searchTerm, filterType, filterMonth, filterCategory]);
 
     // New: Calculate summary stats based on the filtered transactions
     const summaryStats = useMemo(() => {
@@ -96,6 +100,14 @@ export default function TransactionHistory({ transactions, onUpdate, onDelete })
                             onChange={e => { setFilterMonth(e.target.value); setCurrentPage(1); }}
                             className="w-full p-2 border border-slate-300 rounded-lg bg-slate-50"
                         />
+                        <select
+                            value={filterCategory}
+                            onChange={e => { setFilterCategory(e.target.value); setCurrentPage(1); }}
+                            className="w-full p-2 border border-slate-300 rounded-lg bg-slate-50"
+                        >
+                            <option value="">All Categories</option>
+                            {expenseCategories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                        </select>
                         <button
                             onClick={() => { setFilterMonth(''); setCurrentPage(1); }}
                             className="px-4 py-2 text-sm font-medium rounded-lg bg-gray-200 text-gray-700 hover:bg-gray-300"

@@ -180,8 +180,10 @@ export default function Dashboard({ user }) {
         <div className="bg-gray-50 min-h-screen flex flex-col">
             <Header user={user} onSignOut={handleSignOut} />
             <div className="max-w-7xl w-full mx-auto flex-grow p-4 sm:p-6 lg:p-8">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <aside className="md:col-span-1">
+                {/* FIX: Changed to a flex layout that wraps on mobile */}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Sidebar Navigation */}
+                    <aside className="lg:w-1/4">
                         <div className="bg-white p-4 rounded-xl shadow-md border border-slate-200 space-y-2">
                             <NavButton tabName="overview" icon={<OverviewIcon />}>Overview</NavButton>
                             <NavButton tabName="calendar" icon={<CalendarIcon />}>Calendar</NavButton>
@@ -190,11 +192,12 @@ export default function Dashboard({ user }) {
                             <NavButton tabName="profile" icon={<ProfileIcon />}>Profile</NavButton>
                         </div>
                     </aside>
-                    <main className="md:col-span-3">
+
+                    {/* Main Content Area */}
+                    <main className="flex-1">
                         {activeTab === 'overview' && (
                             <div className="space-y-8">
                                 <AddTransactionForm onTransactionAdded={fetchData} />
-                                {/* FIX: Pass the entire 'stats' object to MonthlySummary */}
                                 <MonthlySummary stats={stats} />
                                 <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
                                     <h2 className="text-2xl font-bold text-slate-800 mb-4">Financial Charts</h2>

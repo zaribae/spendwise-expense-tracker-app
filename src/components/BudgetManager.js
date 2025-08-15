@@ -2,7 +2,7 @@
 import React, { useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 
-const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Other'];
+const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Investment', 'Savings', 'Emergency Fund', 'Other'];
 const formatIDR = (value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`;
 
 export default function BudgetManager({ budgets, transactions, onSetBudget, onDeleteBudget }) {

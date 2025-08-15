@@ -1,7 +1,7 @@
 // src/components/TransactionModal.js
 import React, { useEffect, useState } from 'react';
 
-const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Other'];
+const expenseCategories = ['Food', 'Transport', 'Housing', 'Utilities', 'Entertainment', 'Health', 'Shopping', 'Education', 'Investment', 'Savings', 'Emergency Fund', 'Other'];
 
 export default function TransactionModal({ transaction, onSave, onClose, selectedDate }) {
     const [formData, setFormData] = useState({

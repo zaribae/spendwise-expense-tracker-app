@@ -3,6 +3,19 @@ import React, { useMemo, useState } from 'react';
 
 const formatIDR = (value) => `Rp${new Intl.NumberFormat('id-ID').format(value)}`;
 
+// New helper function to format numbers into a shorter version (e.g., 150k, 1.2jt)
+const formatIDRShort = (value) => {
+    if (value >= 1000000) {
+        // Round to one decimal place for millions
+        return `Rp${(value / 1000000).toFixed(1).replace('.0', '')}jt`;
+    }
+    if (value >= 1000) {
+        // Round to the nearest thousand
+        return `Rp${Math.round(value / 1000)}k`;
+    }
+    return `Rp${value}`;
+};
+
 export default function CalendarView({ transactions }) {
     const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -61,13 +74,18 @@ export default function CalendarView({ transactions }) {
                 <div className={`font-bold ${isToday ? 'text-blue-600' : 'text-slate-700'}`}>{day}</div>
                 {expense > 0 && (
                     <div className="mt-auto text-right">
-                        <span className="text-xs text-red-600 font-semibold">Spent:</span>
-                        <p className="text-sm font-bold text-red-600">{formatIDR(expense)}</p>
+                        {/* FIX: Show short format on mobile (sm:hidden) and full format on larger screens (hidden sm:block) */}
+                        <p className="sm:hidden text-xs font-bold text-red-600">{formatIDRShort(expense)}</p>
+                        <p className="hidden sm:block text-xs sm:text-sm font-bold text-red-600">
+                            <span className="font-semibold">Spent: </span>
+                            {formatIDR(expense)}
+                        </p>
                     </div>
                 )}
             </div>
         );
     }
+
 
     return (
         <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
