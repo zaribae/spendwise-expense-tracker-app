@@ -1,8 +1,8 @@
-# SpendWise: AI-Powered Expense Tracker
+# DompetHub: AI-Powered Expense Tracker
 
-SpendWise is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
+DompetHub is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
 
-You can try the app here `https://spendwise-pengeluaran.netlify.app`
+You can try the app here `https://dompethub.netlify.app`
 
 ## Features
 
