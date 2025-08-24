@@ -1,21 +1,38 @@
 // src/components/UserProfile.js
 import Papa from 'papaparse'; // Import PapaParse for CSV export
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 
 export default function UserProfile({ user, transactions, onUpdateSettings }) {
     // State to track the selected month for export, default to the current month
-    const [exportMonth, setExportMonth] = useState(new Date().toISOString().slice(0, 7));
     // Initialize payday from user attributes, default to 1
     const [payday, setPayday] = useState(user['custom:payday'] || '1');
 
+    // Calculate the start and end dates of the current budget cycle
+    const { cycleStartDate, cycleEndDate } = useMemo(() => {
+        const now = new Date();
+        let year = now.getFullYear();
+        let month = now.getMonth();
+
+        let startDate, endDate;
+        if (now.getDate() >= payday) {
+            startDate = new Date(year, month, payday);
+            endDate = new Date(year, month + 1, payday - 1);
+        } else {
+            startDate = new Date(year, month - 1, payday);
+            endDate = new Date(year, month, payday - 1);
+        }
+        return { cycleStartDate: startDate, cycleEndDate: endDate };
+    }, [payday]);
+
     const handleExport = () => {
-        // Filter transactions to get only the ones from the selected month
+        // Filter transactions to get only the ones from the current cycle
         const dataToExport = transactions
-            .filter(t => t.date.startsWith(exportMonth))
+            .filter(t => {
+                const transactionDate = new Date(t.date + 'T00:00:00Z');
+                return transactionDate >= cycleStartDate && transactionDate <= cycleEndDate;
+            })
             .map(({ date, description, category, type, amount }) => ({
-                // FIX: Prepend the date with `=` and wrap in quotes to force Excel
-                // to treat it as a string formula, preventing auto-formatting issues.
                 Date: `="${date}"`,
                 Description: description,
                 Category: category,
@@ -23,31 +40,33 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
                 Amount: amount
             }));
 
-        // Check if there is any data to export
         if (dataToExport.length === 0) {
             Swal.fire({
                 icon: 'info',
                 title: 'No Data',
-                text: `There are no transactions to export for ${exportMonth}.`
+                text: 'There are no transactions in the current cycle to export.'
             });
             return;
         }
 
-        // Convert the JSON data to a CSV string
         const csv = Papa.unparse(dataToExport);
-
-        // Create a Blob to hold the CSV data
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-        // Create a temporary link to trigger the download
         const link = document.createElement("a");
         const url = URL.createObjectURL(blob);
+
+        // Create a descriptive filename based on the cycle dates
+        const fileName = `dompethub_export_${cycleStartDate.toISOString().slice(0, 10)}_to_${cycleEndDate.toISOString().slice(0, 10)}.csv`;
+
         link.setAttribute("href", url);
-        link.setAttribute("download", `spendwise_export_${exportMonth}.csv`);
+        link.setAttribute("download", fileName);
         link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    };
+
+    const formatDate = (date) => {
+        return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     };
 
     const handleSaveSettings = () => {
@@ -94,21 +113,16 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
 
             <div className="bg-white p-6 rounded-xl shadow-md border border-slate-200">
                 <h2 className="text-2xl font-bold text-slate-800 mb-4">Export Transactions</h2>
-                <p className="text-gray-600 mb-4">Select a month to download your transaction history as a CSV file.</p>
-                <div className="flex items-center space-x-4">
-                    <input
-                        type="month"
-                        value={exportMonth}
-                        onChange={e => setExportMonth(e.target.value)}
-                        className="p-2 border border-slate-300 rounded-md bg-slate-50"
-                    />
-                    <button
-                        onClick={handleExport}
-                        className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors shadow-sm"
-                    >
-                        Export to CSV
-                    </button>
-                </div>
+                <p className="text-gray-600 mb-4">Download your transaction history for the current budget cycle.</p>
+                <button
+                    onClick={handleExport}
+                    className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors shadow-sm"
+                >
+                    Export Current Cycle to CSV
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                    Cycle Range: {formatDate(cycleStartDate)} - {formatDate(cycleEndDate)}
+                </p>
             </div>
         </div>
     );

@@ -250,6 +250,7 @@ export default function Dashboard({ user }) {
                                 transactions={transactions}
                                 onSetBudget={handleSetBudget}
                                 onDeleteBudget={handleDeleteBudget}
+                                user={user}
                             />
                         )}
                         {activeTab === 'profile' &&
