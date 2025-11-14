@@ -1,0 +1,50 @@
+{
+    "metrics": {
+        "aggregation_dimensions": [
+            [
+                "InstanceId"
+            ]
+        ],
+        "append_dimensions": {
+            "ImageId": "${aws:ImageId}",
+            "InstanceId": "${aws:InstanceId}",
+            "InstanceType": "${aws:InstanceType}"
+        },
+        "metrics_collected": {
+            "LogicalDisk": {
+                "measurement": [
+                    "% Free Space"
+                ],
+                "metrics_collection_interval": 60,
+                "resources": [
+                    "*"
+                ]
+            },
+            "Memory": {
+                "measurement": [
+                    "% Committed Bytes In Use",
+                    "Available MBytes"
+                ],
+                "metrics_collection_interval": 60,
+                "resources": [
+                    "*"
+                ]
+            },
+            "ENA Packets Shaping": {
+                "measurement": [
+                    "Aggregate inbound BW allowance exceeded",
+                    "Aggregate outbound BW allowance exceeded"
+                ],
+                "metrics_collection_interval": 60,
+                "resources": [
+                    "*"
+                ]
+            },
+            "statsd": {
+                "metrics_aggregation_interval": 60,
+                "metrics_collection_interval": 60,
+                "service_address": ":8125"
+            }
+        }
+    }
+}
