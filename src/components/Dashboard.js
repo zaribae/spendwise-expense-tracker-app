@@ -7,7 +7,7 @@ import Swal from 'sweetalert2';
 import AddTransactionForm from './AddTransactionForm';
 import AssetManager from './AssetManager';
 import BudgetManager from './BudgetManager';
-import CalendarView from './CalendarView'; // Import the new CalendarView component
+import CalendarView from './CalendarView';
 import CashierMode from './CashierMode';
 import { MonthlyStats } from './Charts';
 import Footer from './Footer';
