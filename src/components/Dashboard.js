@@ -1,10 +1,11 @@
 // src/components/Dashboard.js
 import { del, get, post, put } from 'aws-amplify/api';
 import { fetchAuthSession, signOut, updateUserAttribute } from 'aws-amplify/auth';
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
 import AddTransactionForm from './AddTransactionForm';
+import AssetManager from './AssetManager';
 import BudgetManager from './BudgetManager';
 import CalendarView from './CalendarView'; // Import the new CalendarView component
 import CashierMode from './CashierMode';
@@ -24,10 +25,13 @@ const OverviewIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-
 const HistoryIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const BudgetIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6m-5 4h4m5 6H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2z" /></svg>;
 const ProfileIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>;
+const AssetIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>;
+
 
 export default function Dashboard({ user }) {
     const [transactions, setTransactions] = useState([]);
     const [budgets, setBudgets] = useState([]);
+    const [assets, setAssets] = useState([]);
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
@@ -53,10 +57,11 @@ export default function Dashboard({ user }) {
         try {
             const authToken = await getAuthToken();
             const requestOptions = { headers: { Authorization: authToken } };
-            const [transData, statsData, budgetData] = await Promise.all([
+            const [transData, statsData, budgetData, assetData] = await Promise.all([
                 get({ apiName: 'ExpenseTrackerAPI', path: '/transactions', options: requestOptions }).response.then(r => r.body.json()),
                 get({ apiName: 'ExpenseTrackerAPI', path: '/stats', options: requestOptions }).response.then(r => r.body.json()),
-                get({ apiName: 'ExpenseTrackerAPI', path: '/budgets', options: requestOptions }).response.then(r => r.body.json())
+                get({ apiName: 'ExpenseTrackerAPI', path: '/budgets', options: requestOptions }).response.then(r => r.body.json()),
+                get({ apiName: 'ExpenseTrackerAPI', path: '/assets', options: requestOptions }).response.then(r => r.body.json())
             ]);
             if (Array.isArray(transData)) setTransactions(transData.sort((a, b) => new Date(b.date) - new Date(a.date)));
             else setTransactions([]);
@@ -64,6 +69,8 @@ export default function Dashboard({ user }) {
             else setStats(null);
             if (Array.isArray(budgetData)) setBudgets(budgetData);
             else setBudgets([]);
+            if (Array.isArray(assetData)) setAssets(assetData); // Set Assets
+            else setAssets([]);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -189,6 +196,39 @@ export default function Dashboard({ user }) {
         }
     };
 
+    const handleAddAsset = async (data) => {
+        try {
+            const authToken = await getAuthToken();
+            await post({ apiName: 'ExpenseTrackerAPI', path: '/assets', options: { headers: { Authorization: authToken }, body: data } }).response;
+            fetchData();
+            Swal.fire('Success', 'Asset added successfully!', 'success');
+        } catch (e) {
+            Swal.fire('Error', 'Failed to add asset', 'error');
+        }
+    };
+
+    const handleUpdateAsset = async (data, id) => {
+        try {
+            const authToken = await getAuthToken();
+            await put({ apiName: 'ExpenseTrackerAPI', path: `/assets/${id}`, options: { headers: { Authorization: authToken }, body: data } }).response;
+            fetchData();
+            Swal.fire('Success', 'Asset updated!', 'success');
+        } catch (e) {
+            Swal.fire('Error', 'Failed to update asset', 'error');
+        }
+    };
+
+    const handleDeleteAsset = async (id) => {
+        try {
+            const authToken = await getAuthToken();
+            await del({ apiName: 'ExpenseTrackerAPI', path: `/assets/${id}`, options: { headers: { Authorization: authToken } } }).response;
+            fetchData();
+            Swal.fire('Deleted', 'Asset removed', 'success');
+        } catch (e) {
+            Swal.fire('Error', 'Failed to delete asset', 'error');
+        }
+    };
+
 
     const NavButton = ({ tabName, icon, children }) => (
         <button
@@ -213,6 +253,7 @@ export default function Dashboard({ user }) {
                             <NavButton tabName="calendar" icon={<CalendarIcon />}>Calendar</NavButton>
                             <NavButton tabName="history" icon={<HistoryIcon />}>History</NavButton>
                             <NavButton tabName="budget" icon={<BudgetIcon />}>Budgeting</NavButton>
+                            <NavButton tabName="assets" icon={<AssetIcon />}>Assets</NavButton>
                             <NavButton tabName="profile" icon={<ProfileIcon />}>Profile</NavButton>
                         </div>
                     </aside>
@@ -251,6 +292,14 @@ export default function Dashboard({ user }) {
                                 onSetBudget={handleSetBudget}
                                 onDeleteBudget={handleDeleteBudget}
                                 user={user}
+                            />
+                        )}
+                        {activeTab === 'assets' && (
+                            <AssetManager
+                                assets={assets}
+                                onAdd={handleAddAsset}
+                                onUpdate={handleUpdateAsset}
+                                onDelete={handleDeleteAsset}
                             />
                         )}
                         {activeTab === 'profile' &&
