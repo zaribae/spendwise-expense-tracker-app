@@ -22,6 +22,11 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
         return Object.keys(grouped).map(k => ({ name: k, value: grouped[k] }));
     }, [assets]);
 
+    // FIX: Create a sorted copy for display to avoid mutating the original read-only array
+    const sortedChartData = useMemo(() => {
+        return [...chartData].sort((a, b) => b.value - a.value).slice(0, 3);
+    }, [chartData]);
+
     const handleSubmit = (e) => {
         e.preventDefault();
         const payload = { ...formData, amount: parseFloat(formData.amount) };
@@ -66,7 +71,7 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
 
     return (
         <div className="space-y-8 relative">
-            {/* Net Worth Summary - Keeping this clean header style */}
+            {/* Net Worth Summary */}
             <div className="bg-gradient-to-r from-slate-800 to-slate-900 p-8 rounded-3xl shadow-xl text-white flex flex-col md:flex-row justify-between items-center">
                 <div>
                     <p className="text-slate-400 font-medium uppercase tracking-wider text-sm mb-2">Total Net Worth</p>
@@ -92,12 +97,15 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
                         >
                             <div className="flex justify-between items-start mb-3">
                                 <div className="p-2 rounded-xl bg-slate-50 text-2xl group-hover:scale-110 transition-transform duration-300">
-                                    {/* Simple icon mapping based on category first letter or emoji */}
                                     {asset.category === 'Cash' ? '💵' :
                                         asset.category === 'Bank' ? '🏦' :
-                                            asset.category === 'Investment' ? '📈' :
-                                                asset.category === 'Crypto' ? '₿' :
-                                                    asset.category === 'Gold' ? '🥇' : '💼'}
+                                            asset.category === 'E-Wallet' ? '📱' :
+                                                asset.category === 'Investment' ? '📈' :
+                                                    asset.category === 'Stock' ? '📊' :
+                                                        asset.category === 'Crypto' ? '₿' :
+                                                            asset.category === 'Property' ? '🏠' :
+                                                                asset.category === 'Vehicle' ? '🚗' :
+                                                                    asset.category === 'Gold' ? '🥇' : '💼'}
                                 </div>
                                 <span
                                     className="px-3 py-1 rounded-full text-xs font-semibold"
@@ -163,7 +171,8 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
                         </div>
 
                         <div className="mt-6 space-y-3">
-                            {chartData.sort((a, b) => b.value - a.value).slice(0, 3).map((item, idx) => (
+                            {/* FIX: Use the sorted copy here instead of sorting in place */}
+                            {sortedChartData.map((item, idx) => (
                                 <div key={idx} className="flex justify-between items-center text-sm">
                                     <div className="flex items-center gap-2">
                                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: COLORS[assetCategories.indexOf(item.name) % COLORS.length] }}></div>
