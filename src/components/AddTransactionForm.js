@@ -2,6 +2,7 @@ import { get, post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
+import awsConfig from '../config.js';
 
 export default function AddTransactionForm({ onTransactionAdded }) {
     const [text, setText] = useState('');
@@ -54,7 +55,10 @@ export default function AddTransactionForm({ onTransactionAdded }) {
         try {
             const authToken = (await fetchAuthSession()).tokens?.idToken?.toString();
             const requestOptions = {
-                headers: { Authorization: authToken },
+                headers: {
+                    Authorization: authToken,
+                    'x-api-key': awsConfig.API.REST.ExpenseTrackerAPI.apiKey
+                },
                 body: {
                     text: text,
                     assetId: selectedAssetId // Send the asset ID to backend
@@ -73,7 +77,11 @@ export default function AddTransactionForm({ onTransactionAdded }) {
                 showConfirmButton: false
             });
         } catch (err) {
-            Swal.fire({ icon: 'error', title: 'Processing Failed', text: 'The AI could not understand the transaction.' });
+            if (err.response && err.response.status === 429) {
+                Swal.fire({ icon: 'warning', title: 'Too Many Requests', text: 'Please wait a moment before trying again.' });
+            } else {
+                Swal.fire({ icon: 'error', title: 'Failed', text: 'The AI could not process this transaction.' });
+            }
         }
         setLoading(false);
     };

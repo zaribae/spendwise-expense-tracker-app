@@ -11,7 +11,8 @@ const awsConfig = {
         REST: {
             ExpenseTrackerAPI: {
                 endpoint: process.env.REACT_APP_API_GATEWAY_ENDPOINT, // Found in API Gateway -> Stages
-                region: process.env.REACT_APP_AWS_REGION // e.g., 'us-east-1', make sure this matches your backend region
+                region: process.env.REACT_APP_AWS_REGION, // e.g., 'us-east-1', make sure this matches your backend region
+                apiKey: process.env.REACT_APP_API_GATEWAY_USAGE_API_KEY
             }
         }
     }
