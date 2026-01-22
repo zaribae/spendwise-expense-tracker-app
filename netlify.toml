@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/*"
+  from = "https://dompethub.netlify.app/*"
   to = "https://dompethub.app/:splat"
   status = 301
   force = true
