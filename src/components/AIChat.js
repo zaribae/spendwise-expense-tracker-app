@@ -1,17 +1,16 @@
 import { post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown'; // Import ReactMarkdown
+import ReactMarkdown from 'react-markdown';
 
-export default function AIChat() {
-    const [messages, setMessages] = useState([
-        { role: 'assistant', content: 'Hello! I am your AI Financial Advisor. Ask me anything about your spending!' }
-    ]);
+export default function AIChat({ messages, setMessages }) {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
+
+    // Scroll on mount and when messages change
     useEffect(scrollToBottom, [messages]);
 
     const handleSend = async (e) => {
@@ -42,7 +41,7 @@ export default function AIChat() {
         <div className="bg-white rounded-xl shadow-md border border-slate-200 h-[600px] flex flex-col">
             <div className="p-4 border-b border-slate-100 bg-slate-50 rounded-t-xl">
                 <h2 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    🤖 Financial Advisor <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Beta</span>
+                    🤖 DompetHub Financial Advisor <span className="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full">Beta</span>
                 </h2>
             </div>
 
@@ -50,10 +49,8 @@ export default function AIChat() {
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                         <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}`}>
-                            {/* FIX: Render Markdown content */}
                             <ReactMarkdown
                                 components={{
-                                    // Custom styling for markdown elements inside the chat bubble
                                     p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                     ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
                                     ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,

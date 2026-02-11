@@ -36,6 +36,10 @@ export default function Dashboard({ user }) {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('overview');
 
+    const [chatMessages, setChatMessages] = useState([
+        { role: 'assistant', content: 'Hello! I am your AI Financial Advisor. Ask me anything about your spending!' }
+    ]);
+
     const handleSignOut = async () => {
         try {
             await signOut();
@@ -303,7 +307,12 @@ export default function Dashboard({ user }) {
                                 onDelete={handleDeleteAsset}
                             />
                         )}
-                        {activeTab === 'advisor' && <AIChat />}
+                        {activeTab === 'advisor' && (
+                            <AIChat
+                                messages={chatMessages}
+                                setMessages={setChatMessages}
+                            />
+                        )}
 
                         {activeTab === 'profile' &&
                             <UserProfile
