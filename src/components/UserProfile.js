@@ -1,6 +1,8 @@
 // src/components/UserProfile.js
+import { post } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import Papa from 'papaparse'; // Import PapaParse for CSV export
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 
 export default function UserProfile({ user, transactions, onUpdateSettings }) {
@@ -65,6 +67,33 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
         document.body.removeChild(link);
     };
 
+    // Add this inside UserProfile component
+    const handleConnectTelegram = async () => {
+        try {
+            const authToken = (await fetchAuthSession()).tokens?.idToken?.toString();
+            const response = await post({
+                apiName: 'ExpenseTrackerAPI',
+                path: '/telegram/generate-code',
+                options: { headers: { Authorization: authToken } }
+            }).response;
+
+            const data = await response.body.json();
+
+            Swal.fire({
+                title: 'Connect Telegram',
+                html: `
+                <p>Send this command to our Telegram Bot:</p>
+                <h2 style="font-size: 2em; font-weight: bold; margin: 10px 0;">/start ${data.code}</h2>
+                <a href="https://t.me/dompethub_bot" target="_blank">Open Bot</a>
+            `,
+                icon: 'info'
+            });
+        } catch (e) {
+            console.error(e);
+            Swal.fire('Error', 'Could not generate code', 'error');
+        }
+    };
+
     const formatDate = (date) => {
         return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
     };
@@ -107,6 +136,28 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
                         className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors shadow-sm"
                     >
                         Save
+                    </button>
+                </div>
+            </div>
+
+            <div className="border-t border-slate-100 my-6"></div>
+
+            {/* Telegram Connection Section */}
+            <div className="space-y-4">
+                <h3 className="text-lg font-semibold text-slate-700">Integrations</h3>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-200">
+                    <div>
+                        <p className="font-medium text-slate-800">Telegram Bot</p>
+                        <p className="text-sm text-slate-500">Connect your account to log expenses via chat.</p>
+                    </div>
+                    <button
+                        onClick={handleConnectTelegram}
+                        className="mt-3 sm:mt-0 inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    >
+                        <svg className="mr-2 -ml-1 h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.58-.35-.88.22-1.46.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.42-.01-1.22-.24-1.81-.44-.73-.24-1.3-.37-1.25-.78.03-.22.32-.44.89-.66 3.5-1.52 5.83-2.53 6.99-3.02 3.33-1.45 4.02-1.7 4.47-1.7.09 0 .32.02.46.12.12.08.15.19.17.27v.03z" />
+                        </svg>
+                        Connect Telegram
                     </button>
                 </div>
             </div>
