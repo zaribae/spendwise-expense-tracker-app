@@ -8,7 +8,7 @@ export default function Header({ user, onSignOut }) {
                     <img
                         src="/images/logo.PNG"
                         alt="DompetHub Logo"
-                        className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                        className="h-16 w-auto object-contain"
                     />
                     <div className="flex items-center space-x-2 sm:space-x-4">
                         {/* FIX: Hide welcome text on extra-small screens */}

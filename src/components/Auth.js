@@ -10,7 +10,7 @@ function AuthCard({ title, children }) {
                 <img
                     src="/images/logo.PNG"
                     alt="DompetHub Logo"
-                    className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                    className="h-16 w-auto object-contain"
                 />
             </div>
             <h2 className="text-2xl font-bold text-center text-slate-800 mb-6">{title}</h2>

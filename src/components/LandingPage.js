@@ -21,7 +21,7 @@ export default function LandingPage({ children }) {
                     <img
                         src="/images/logo.PNG"
                         alt="DompetHub Logo"
-                        className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                        className="h-16 w-auto object-contain"
                     />
                 </div>
             </header>
