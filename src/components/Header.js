@@ -1,13 +1,15 @@
 // src/components/Header.js
-import React from 'react';
-import Logo from './Logo';
 
 export default function Header({ user, onSignOut }) {
     return (
         <header className="bg-white shadow-sm sticky top-0 z-40 backdrop-blur-sm">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center py-3">
-                    <Logo className="h-9 w-auto" />
+                    <img
+                        src="/images/logo.PNG"
+                        alt="DompetHub Logo"
+                        className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                    />
                     <div className="flex items-center space-x-2 sm:space-x-4">
                         {/* FIX: Hide welcome text on extra-small screens */}
                         <span className="text-gray-600 hidden sm:block">

@@ -1,7 +1,5 @@
 // src/components/LandingPage.js
-import React from 'react';
 import Footer from './Footer';
-import Logo from './Logo';
 
 const Feature = ({ icon, title, children }) => (
     <div className="flex items-start space-x-4">
@@ -20,7 +18,11 @@ export default function LandingPage({ children }) {
         <div className="bg-gray-50 min-h-screen flex flex-col">
             <header className="py-6 bg-white shadow-sm sticky top-0 backdrop-blur-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <Logo />
+                    <img
+                        src="/images/logo.PNG"
+                        alt="DompetHub Logo"
+                        className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                    />
                 </div>
             </header>
             <main className="flex-grow">

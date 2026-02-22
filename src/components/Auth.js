@@ -1,14 +1,17 @@
 // src/components/Auth.js
 import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Swal from 'sweetalert2';
-import Logo from './Logo';
 
 function AuthCard({ title, children }) {
     return (
         <div className="bg-white shadow-lg rounded-xl p-8 border border-slate-200">
             <div className="mb-8 flex justify-center">
-                <Logo />
+                <img
+                    src="/images/logo.PNG"
+                    alt="DompetHub Logo"
+                    className="h-16 w-auto object-contain" // Atur tinggi (h-10) sesuai selera menggunakan Tailwind CSS
+                />
             </div>
             <h2 className="text-2xl font-bold text-center text-slate-800 mb-6">{title}</h2>
             {children}
