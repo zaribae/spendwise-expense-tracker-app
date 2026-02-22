@@ -84,7 +84,9 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
                 html: `
                 <p>Send this command to our Telegram Bot:</p>
                 <h2 style="font-size: 2em; font-weight: bold; margin: 10px 0;">/start ${data.code}</h2>
-                <a href="https://t.me/dompethub_bot" target="_blank">Open Bot</a>
+                <a href="https://t.me/dompethub_bot" target="_blank" rel="noopener noreferrer" style="display: inline-block; background-color: #0088cc; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-weight: bold;">
+            Open Telegram App
+        </a>
             `,
                 icon: 'info'
             });
