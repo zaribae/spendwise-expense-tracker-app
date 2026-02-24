@@ -29,25 +29,25 @@ You can try the app here: `https://dompethub.app`
 
 DompetHub uses a fully serverless, event-driven architecture on AWS, integrating web and Telegram interfaces with AI processing.
 
-[![](https://mermaid.ink/img/pako:eNp9VYtu2jAU_RXL0qpOgwIDCkXTpEC2jilbq5Ku0pKqcokLGYmd2c4Ka_rvu7ZJCY8uEomde-7r-NzwhKc8oniAZ4Jkc-S7IUNwyfzevriWVEj7Tl_Xdzf0PoCfMdxWDT5NaKBv4JhWzZRFIdsJ-1lwpoyhDHBFyVQF5n7yS6LJpYNcIuf3nIgoDNkXLhWNEGfoO1VJ_LBqTNr_ie_cTNAo4XmEJlT8oSKhstLFiM9YrHjgpOQvRFxvIYuTqzk6Ql9v_EprzuX4_KbEwgadE0UfyQrwV58mvnl1hICTOecLeVvWslePR9L7iKDPOZuqmLNKPfry7kZX127gEkXQRUYFsZiQ-YIwSaxLDTlSUgXPYR7NYHG7G8QZB84YXQo-hY65AP9rFj_EQN0Vz1XMZnse2-e2bkNzwVRclxm8OzrgWyF9u1FLk7tiJOXucDuZO7zzl8FxtaO3t3sQRwbHtk3I_CWWiovVAdgwCo7XLBywegvIUzblxWyhqXyM4Xh933u728hrMvq0VFQwkhgVxUDpxu9c8N-Bvpnzb6AhjYB0TZznkW9OvY0871slT1nMhmrw21fwmzcgR8aoZQfV9YFYixk9VK9_LMYwOgL4k4WdGms3S_RBAzw-i1nD5wvKihd1V0Aao6uekiSR6J3We2Fl_moZZdVlLXpvk43mRKGGVESoGmrMaZLVkKJLVez4vPStnS4vYHDWWttPXRmyUnrWZoAmwA-SxBFAJDrU5gbXUFvj0yBGWMV63PbQmR2cum1Aj9N-wHUf9ceyfDtDlfrXk644KifApjOE2SkAaRup2-cwKmEbXn9QAZ85ZOgdu4UV9RZMB9uUqFfWEw450senm4D4E_KHIn9ZvJb4QNn7MeGLkmY62tfJxXeQkcyAT1qYMdgtqpiAoAGTJauqCHAN_mTiCA-UyGkNp1SkRG_xkw4QYjWnKQ3xAJYREYsQh-wZfDLCfnKelm6C57M5HjyQRMIuz7QI3JjoFC8QSE_FiOdM4UGre9o1QfDgCS_xoNM76fa7zXa302qfdTrdfg2vAPW-f9I863d6_Va32ep1OqfPNfzXpG2enAGwd3rWbzZ77Wav1X3-B8QnNx4?type=png)](https://mermaid.live/edit#pako:eNp9VYtu2jAU_RXL0qpOgwIDCkXTpEC2jilbq5Ku0pKqcokLGYmd2c4Ka_rvu7ZJCY8uEomde-7r-NzwhKc8oniAZ4Jkc-S7IUNwyfzevriWVEj7Tl_Xdzf0PoCfMdxWDT5NaKBv4JhWzZRFIdsJ-1lwpoyhDHBFyVQF5n7yS6LJpYNcIuf3nIgoDNkXLhWNEGfoO1VJ_LBqTNr_ie_cTNAo4XmEJlT8oSKhstLFiM9YrHjgpOQvRFxvIYuTqzk6Ql9v_EprzuX4_KbEwgadE0UfyQrwV58mvnl1hICTOecLeVvWslePR9L7iKDPOZuqmLNKPfry7kZX127gEkXQRUYFsZiQ-YIwSaxLDTlSUgXPYR7NYHG7G8QZB84YXQo-hY65AP9rFj_EQN0Vz1XMZnse2-e2bkNzwVRclxm8OzrgWyF9u1FLk7tiJOXucDuZO7zzl8FxtaO3t3sQRwbHtk3I_CWWiovVAdgwCo7XLBywegvIUzblxWyhqXyM4Xh933u728hrMvq0VFQwkhgVxUDpxu9c8N-Bvpnzb6AhjYB0TZznkW9OvY0871slT1nMhmrw21fwmzcgR8aoZQfV9YFYixk9VK9_LMYwOgL4k4WdGms3S_RBAzw-i1nD5wvKihd1V0Aao6uekiSR6J3We2Fl_moZZdVlLXpvk43mRKGGVESoGmrMaZLVkKJLVez4vPStnS4vYHDWWttPXRmyUnrWZoAmwA-SxBFAJDrU5gbXUFvj0yBGWMV63PbQmR2cum1Aj9N-wHUf9ceyfDtDlfrXk644KifApjOE2SkAaRup2-cwKmEbXn9QAZ85ZOgdu4UV9RZMB9uUqFfWEw450senm4D4E_KHIn9ZvJb4QNn7MeGLkmY62tfJxXeQkcyAT1qYMdgtqpiAoAGTJauqCHAN_mTiCA-UyGkNp1SkRG_xkw4QYjWnKQ3xAJYREYsQh-wZfDLCfnKelm6C57M5HjyQRMIuz7QI3JjoFC8QSE_FiOdM4UGre9o1QfDgCS_xoNM76fa7zXa302qfdTrdfg2vAPW-f9I863d6_Va32ep1OqfPNfzXpG2enAGwd3rWbzZ77Wav1X3-B8QnNx4)
+[![](https://mermaid.ink/img/pako:eNp9VYtu2jAU_RXL0qpOg9ICBYqmSYFsLVO2ViVdpSVV5RIXMhI7s50V1vTfd22TEh5dJBI799zX8bnhGU94RHEfTwXJZsh3Q4bgkvmDfXEjqZD2nb5u7m_pQwA_Y7irGnya0EDfwDGtmimLQrYV9ovgTBlDGeCakokKzP3ol0TjKwe5RM4eOBFRGLILLhWNEGfoO1VJ_LhsjFv_ie_cjtEw4XmExlT8oSKhstLFkE9ZrHjgpOQvRFxtIYuTqxk6QF9v_UprztXo_LbEwgadE0WfyBLw15_Hvnl1gICTGedzeVfWslOPR9KHiKAvOZuomLNKPfry7ofXN27gEkXQZUYFsZiQ-YIwSaxLDTlSUgXPQR5NYXG3HcQZBc4IXQk-gY65AP8bFj_GQN01z1XMpjsem-e2akNzwVRclxm8O9jjWyF9s1FLk7tkJOXuYDOZO7j3F8FhtaP3dzsQRwaHtk3IfBFLxcVyD2wQBYcrFvZYvTnkKZvyYjbXVD7FcLy-773fbuQtGX1eKCoYSYyKYqB07Xcu-O9A38z5N9CARkC6Js7zyDen3kKe962SpyxmTTX47Sr43TuQI2PUsoPq-kCsxYweqtc_FSMYHQH8ycJOjbWbJfqoAR6fxqzh8zllxau6KyCN0VVPSJJI9EHrvbAyf7OMsuqyFr23yYYzolBDKiJUDTVmNMlqSNGFKrZ8XvvWTleXMDgrre2mrgxZKT1rM0AT4AdJ4gggEu1rc41rqI3xaRAjrGI1bjvozA5O3Tagx2k34KqP-lNZvp2hSv2rSVcclRNg0xnC7BSAtI3U7XMQlbA1rz-ogM8cMvSO3MKKegOmg61L1CvrCYcc6ePTTUD8MflDkb8o3kq8p-zdmPBFSTMd7ev48jvISGbAJy3MGGwXVYxB0IDJkmVVBLgGfzJxhPtK5LSGUypSorf4WQcIsZrRlIa4D8uIiHmIQ_YCPhlhPzlPSzfB8-kM9x9JImGXZ1oEbkx0ilcIpKdiyHOmcP-k2WyZILj_jBe4f9Y-avZaZ532Wee002q3ezW8xP1696jVPDk77rVPO71es3vSOn2p4b8m78nR8XGv0-k2wdztHbe7zZd_-YM3Ug?type=png)](https://mermaid.live/edit#pako:eNp9VYtu2jAU_RXL0qpOg9ICBYqmSYFsLVO2ViVdpSVV5RIXMhI7s50V1vTfd22TEh5dJBI799zX8bnhGU94RHEfTwXJZsh3Q4bgkvmDfXEjqZD2nb5u7m_pQwA_Y7irGnya0EDfwDGtmimLQrYV9ovgTBlDGeCakokKzP3ol0TjKwe5RM4eOBFRGLILLhWNEGfoO1VJ_LhsjFv_ie_cjtEw4XmExlT8oSKhstLFkE9ZrHjgpOQvRFxtIYuTqxk6QF9v_UprztXo_LbEwgadE0WfyBLw15_Hvnl1gICTGedzeVfWslOPR9KHiKAvOZuomLNKPfry7ofXN27gEkXQZUYFsZiQ-YIwSaxLDTlSUgXPQR5NYXG3HcQZBc4IXQk-gY65AP8bFj_GQN01z1XMpjsem-e2akNzwVRclxm8O9jjWyF9s1FLk7tkJOXuYDOZO7j3F8FhtaP3dzsQRwaHtk3IfBFLxcVyD2wQBYcrFvZYvTnkKZvyYjbXVD7FcLy-773fbuQtGX1eKCoYSYyKYqB07Xcu-O9A38z5N9CARkC6Js7zyDen3kKe962SpyxmTTX47Sr43TuQI2PUsoPq-kCsxYweqtc_FSMYHQH8ycJOjbWbJfqoAR6fxqzh8zllxau6KyCN0VVPSJJI9EHrvbAyf7OMsuqyFr23yYYzolBDKiJUDTVmNMlqSNGFKrZ8XvvWTleXMDgrre2mrgxZKT1rM0AT4AdJ4gggEu1rc41rqI3xaRAjrGI1bjvozA5O3Tagx2k34KqP-lNZvp2hSv2rSVcclRNg0xnC7BSAtI3U7XMQlbA1rz-ogM8cMvSO3MKKegOmg61L1CvrCYcc6ePTTUD8MflDkb8o3kq8p-zdmPBFSTMd7ev48jvISGbAJy3MGGwXVYxB0IDJkmVVBLgGfzJxhPtK5LSGUypSorf4WQcIsZrRlIa4D8uIiHmIQ_YCPhlhPzlPSzfB8-kM9x9JImGXZ1oEbkx0ilcIpKdiyHOmcP-k2WyZILj_jBe4f9Y-avZaZ532Wee002q3ezW8xP1696jVPDk77rVPO71es3vSOn2p4b8m78nR8XGv0-k2wdztHbe7zZd_-YM3Ug)
 
 ### 1. Web Application Flow
-1. Pengguna login di **React Frontend**.
-2. **Amazon Cognito** memverifikasi identitas dan mengembalikan *JWT Token*.
-3. Frontend memanggil API (*request data, tambah transaksi*) ke **API Gateway** dengan menyematkan JWT.
-4. **Cognito Authorizer** di API Gateway memvalidasi token.
-5. Jika valid, permintaan diteruskan ke **AWS Lambda** (Python).
-6. Lambda membaca/menulis data spesifik milik pengguna tersebut (`userId` partition key) di **DynamoDB** dan merespons ke *Frontend*.
+1. User logs in to the **React Frontend**.
+2. **Amazon Cognito** verifies the identity and returns a *JWT Token*.
+3. The frontend calls the API (*request data, add transactions*) to **API Gateway** by attaching the JWT.
+4. **Cognito Authorizer** in API Gateway validates the token.
+5. If valid, the request is forwarded to **AWS Lambda** (Python).
+6. Lambda reads/writes specific data belonging to the user (`userId` partition key) in **DynamoDB** and responds to the *Frontend*.
 
 ### 2. Telegram Bot Integration & AI Flow
-1. Pengguna mengirim pesan ke bot Telegram.
-2. Telegram mengirimkan *payload* POST ke **API Gateway Webhook Endpoint**.
-3. Memanggil **Telegram Webhook (AWS Lambda)**.
-4. **Anti-Spam & Auth Check**: Lambda mengecek apakah pesan sudah usang (via *timestamp*) dan mengecek tabel `TelegramLinks` di DynamoDB untuk mencocokkan `chat_id` Telegram dengan `userId` Cognito.
-5. **Unified AI Routing**: Pesan pengguna dan konteks data keuangan mereka (Aset, Budget, Transaksi Siklus Ini) dikirim ke **Groq API / Bedrock**.
-6. Model **LLaMA-3 / Claude** menganalisis apakah pesan adalah **Transaksi Baru** atau **Pertanyaan Advisor**.
-7. Jika Transaksi: Lambda menyimpan data ke tabel `Transactions`, memotong saldo di `Assets`.
-8. Jika Pertanyaan: Lambda mengirim kembali balasan teks analitik yang sudah diformat ke Telegram.
+1. User sends a message to the Telegram bot.
+2. Telegram sends a POST *payload* to the **API Gateway Webhook Endpoint**.
+3. This triggers the **Telegram Webhook (AWS Lambda)**.
+4. **Anti-Spam & Auth Check**: Lambda checks if the message is outdated (via *timestamp*) and checks the `TelegramLinks` table in DynamoDB to match the Telegram `chat_id` with the Cognito `userId`.
+5. **Unified AI Routing**: The user's message and their financial data context (Assets, Budgets, Current Cycle Transactions) are sent to the **Groq API / Bedrock**.
+6. The **LLaMA-3 / Claude** model analyzes whether the message is a **New Transaction** or an **Advisor Query**.
+7. If Transaction: Lambda saves the data to the `Transactions` table and updates the balance in `Assets`.
+8. If Query: Lambda sends back a formatted analytical text reply to Telegram.
 
 
 ## Setup and Installation
@@ -76,7 +76,7 @@ Before running the frontend, the AWS backend must be set up. This involves confi
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/zaribae/spendwise-expense-tracker-app.git
+   git clone [https://github.com/zaribae/spendwise-expense-tracker-app.git](https://github.com/zaribae/spendwise-expense-tracker-app.git)
    cd spendwise-expense-tracker-app
    ```
 
