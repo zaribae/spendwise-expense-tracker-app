@@ -2,7 +2,7 @@
 
 DompetHub is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language via the Web Dashboard or our Telegram Bot. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
 
-You can try the app here: `https://dompethub.app`
+You can try the app here: [https://dompethub.app](https://dompethub.app)
 
 ## Features
 
@@ -76,7 +76,7 @@ Before running the frontend, the AWS backend must be set up. This involves confi
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/zaribae/spendwise-expense-tracker-app.git](https://github.com/zaribae/spendwise-expense-tracker-app.git)
+   git clone https://github.com/zaribae/spendwise-expense-tracker-app.git
    cd spendwise-expense-tracker-app
    ```
 
