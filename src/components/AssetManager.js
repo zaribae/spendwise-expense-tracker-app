@@ -12,7 +12,7 @@ import {
     Smartphone, TrendingUp,
     Wallet
 } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Area, AreaChart, Cell, Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import Swal from 'sweetalert2';
 import AssetHistoryChart from './AssetHistory';
@@ -44,6 +44,25 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
     const [activeFilter, setActiveFilter] = useState('Semua');
 
     const totalNetWorth = useMemo(() => assets.reduce((sum, a) => sum + a.amount, 0), [assets]);
+
+    // Ambil data riwayat Total Net Worth
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                // Mock data untuk lingkungan pratinjau (preview)
+                const mockData = [
+                    { date: '2026-01-01', totalAmount: totalNetWorth * 0.8 },
+                    { date: '2026-02-01', totalAmount: totalNetWorth * 0.9 },
+                    { date: '2026-03-01', totalAmount: totalNetWorth * 0.95 },
+                    { date: '2026-04-01', totalAmount: totalNetWorth }
+                ];
+                setNetWorthHistory(mockData);
+            } catch (error) {
+                console.error("Error fetching net worth history", error);
+            }
+        };
+        fetchHistory();
+    }, [assets, totalNetWorth]);
 
     const chartData = useMemo(() => {
         const grouped = {};
