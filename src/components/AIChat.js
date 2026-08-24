@@ -2,6 +2,7 @@ import { post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
 import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function AIChat({ messages, setMessages }) {
     const [input, setInput] = useState('');
@@ -28,11 +29,15 @@ export default function AIChat({ messages, setMessages }) {
                 apiName: 'ExpenseTrackerAPI', path: '/chat',
                 options: { headers: { Authorization: authToken }, body: { query: userMsg.content } }
             }).response;
+
             const data = await response.body.json();
 
-            setMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+            // PERBAIKAN: Berikan teks default jika data.response tiba-tiba kosong
+            const aiReply = data.response || "Maaf, saya tidak dapat memproses permintaan tersebut saat ini.";
+
+            setMessages(prev => [...prev, { role: 'assistant', content: aiReply }]);
         } catch (error) {
-            setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error." }]);
+            setMessages(prev => [...prev, { role: 'assistant', content: "❌ Gagal terhubung ke server. Periksa koneksi Anda." }]);
         }
         setLoading(false);
     };
@@ -48,14 +53,25 @@ export default function AIChat({ messages, setMessages }) {
             <div className="flex-grow overflow-y-auto p-4 space-y-4">
                 {messages.map((msg, idx) => (
                     <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none'}`}>
+                        <div className={`max-w-[85%] p-3.5 rounded-2xl text-sm leading-relaxed ${msg.role === 'user' ? 'bg-blue-600 text-white rounded-br-none' : 'bg-slate-100 text-slate-800 rounded-bl-none overflow-hidden'}`}>
                             <ReactMarkdown
+                                remarkPlugins={[remarkGfm]} // <-- 2. TAMBAHKAN REMARK PLUGIN DI SINI
                                 components={{
                                     p: ({ node, ...props }) => <p className="mb-2 last:mb-0" {...props} />,
                                     ul: ({ node, ...props }) => <ul className="list-disc ml-4 mb-2" {...props} />,
                                     ol: ({ node, ...props }) => <ol className="list-decimal ml-4 mb-2" {...props} />,
                                     li: ({ node, ...props }) => <li className="mb-1" {...props} />,
                                     strong: ({ node, ...props }) => <span className="font-bold" {...props} />,
+
+                                    // 3. TAMBAHKAN STYLING TAILWIND KHUSUS UNTUK TABEL
+                                    table: ({ node, ...props }) => (
+                                        <div className="overflow-x-auto my-3 rounded-lg border border-slate-200/60">
+                                            <table className="min-w-full text-left border-collapse" {...props} />
+                                        </div>
+                                    ),
+                                    thead: ({ node, ...props }) => <thead className="bg-slate-200/50" {...props} />,
+                                    th: ({ node, ...props }) => <th className="px-3 py-2 font-bold text-slate-700 border-b border-slate-200/60" {...props} />,
+                                    td: ({ node, ...props }) => <td className="px-3 py-2 border-b border-slate-200/60 align-top" {...props} />,
                                 }}
                             >
                                 {msg.content}
