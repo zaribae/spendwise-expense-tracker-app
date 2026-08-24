@@ -1,7 +1,6 @@
 // src/components/UserProfile.js
-import { post } from 'aws-amplify/api';
+import { get, post } from 'aws-amplify/api';
 import { fetchAuthSession } from 'aws-amplify/auth';
-import Papa from 'papaparse'; // Import PapaParse for CSV export
 import { useMemo, useState } from 'react';
 import Swal from 'sweetalert2';
 
@@ -9,6 +8,7 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
     // State to track the selected month for export, default to the current month
     // Initialize payday from user attributes, default to 1
     const [payday, setPayday] = useState(user['custom:payday'] || '1');
+    const [isExporting, setIsExporting] = useState(false);
 
     // Calculate the start and end dates of the current budget cycle
     const { cycleStartDate, cycleEndDate } = useMemo(() => {
@@ -27,44 +27,82 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
         return { cycleStartDate: startDate, cycleEndDate: endDate };
     }, [payday]);
 
-    const handleExport = () => {
-        // Filter transactions to get only the ones from the current cycle
-        const dataToExport = transactions
-            .filter(t => {
-                const transactionDate = new Date(t.date + 'T00:00:00Z');
-                return transactionDate >= cycleStartDate && transactionDate <= cycleEndDate;
-            })
-            .map(({ date, description, category, type, amount }) => ({
-                Date: `="${date}"`,
-                Description: description,
-                Category: category,
-                Type: type,
-                Amount: amount
-            }));
+    // const handleExport = () => {
+    //     // Filter transactions to get only the ones from the current cycle
+    //     const dataToExport = transactions
+    //         .filter(t => {
+    //             const transactionDate = new Date(t.date + 'T00:00:00Z');
+    //             return transactionDate >= cycleStartDate && transactionDate <= cycleEndDate;
+    //         })
+    //         .map(({ date, description, category, type, amount }) => ({
+    //             Date: `="${date}"`,
+    //             Description: description,
+    //             Category: category,
+    //             Type: type,
+    //             Amount: amount
+    //         }));
 
-        if (dataToExport.length === 0) {
-            Swal.fire({
-                icon: 'info',
-                title: 'No Data',
-                text: 'There are no transactions in the current cycle to export.'
-            });
-            return;
+    //     if (dataToExport.length === 0) {
+    //         Swal.fire({
+    //             icon: 'info',
+    //             title: 'No Data',
+    //             text: 'There are no transactions in the current cycle to export.'
+    //         });
+    //         return;
+    //     }
+
+    //     const csv = Papa.unparse(dataToExport);
+    //     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    //     const link = document.createElement("a");
+    //     const url = URL.createObjectURL(blob);
+
+    //     // Create a descriptive filename based on the cycle dates
+    //     const fileName = `dompethub_export_${cycleStartDate.toISOString().slice(0, 10)}_to_${cycleEndDate.toISOString().slice(0, 10)}.csv`;
+
+    //     link.setAttribute("href", url);
+    //     link.setAttribute("download", fileName);
+    //     link.style.visibility = 'hidden';
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    // };
+
+    const handleSecureExport = async () => {
+        setIsExporting(true);
+        try {
+            // 1. Dapatkan Token Cognito
+            const session = await fetchAuthSession();
+            const authToken = session.tokens?.idToken?.toString();
+
+            // 2. Panggil API API Gateway + Lambda yang mem-verifikasi token ini
+            const response = await get({
+                apiName: 'ExpenseTrackerAPI',
+                path: '/transactions/export',
+                options: { headers: { Authorization: authToken } }
+            }).response;
+
+            const data = await response.body.json();
+
+            if (data.downloadUrl) {
+                // 3. Memicu unduhan otomatis ke URL S3 sementara
+                const a = document.createElement('a');
+                a.href = data.downloadUrl;
+                // 'download' attribute enforces file download behavior
+                a.setAttribute('download', '');
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                Swal.fire('Berhasil!', 'Laporan transaksi Anda sedang diunduh.', 'success');
+            } else {
+                throw new Error("Download URL not found in response");
+            }
+        } catch (error) {
+            console.error("Export Error:", error);
+            Swal.fire('Error', 'Gagal mengekspor data. Silakan coba lagi.', 'error');
+        } finally {
+            setIsExporting(false);
         }
-
-        const csv = Papa.unparse(dataToExport);
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        const url = URL.createObjectURL(blob);
-
-        // Create a descriptive filename based on the cycle dates
-        const fileName = `dompethub_export_${cycleStartDate.toISOString().slice(0, 10)}_to_${cycleEndDate.toISOString().slice(0, 10)}.csv`;
-
-        link.setAttribute("href", url);
-        link.setAttribute("download", fileName);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
     };
 
     // Add this inside UserProfile component
@@ -168,10 +206,14 @@ export default function UserProfile({ user, transactions, onUpdateSettings }) {
                 <h2 className="text-2xl font-bold text-slate-800 mb-4">Export Transactions</h2>
                 <p className="text-gray-600 mb-4">Download your transaction history for the current budget cycle.</p>
                 <button
-                    onClick={handleExport}
-                    className="px-4 py-2 bg-emerald-500 text-white rounded-md hover:bg-emerald-600 transition-colors shadow-sm"
+                    onClick={handleSecureExport}
+                    disabled={isExporting}
+                    className={`px-5 py-2.5 rounded-lg font-bold shadow-sm transition-all flex items-center justify-center gap-2 ${isExporting
+                        ? 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                        : 'bg-emerald-600 text-white hover:bg-emerald-700'
+                        }`}
                 >
-                    Export Current Cycle to CSV
+                    {isExporting ? 'Memproses di Server...' : 'Download CSV Laporan'}
                 </button>
                 <p className="text-xs text-gray-500 mt-2">
                     Cycle Range: {formatDate(cycleStartDate)} - {formatDate(cycleEndDate)}

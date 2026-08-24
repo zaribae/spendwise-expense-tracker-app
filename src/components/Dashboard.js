@@ -268,6 +268,7 @@ export default function Dashboard({ user }) {
                         {activeTab === 'overview' && (
                             <div className="space-y-8">
                                 <AddTransactionForm onTransactionAdded={fetchData} />
+
                                 <MonthlySummary stats={stats} />
                                 <div className="bg-blue-50 border-l-4 border-blue-500 rounded-r-lg p-5 mb-6 flex flex-col sm:flex-row items-center justify-between shadow-sm">
                                     <div className="flex items-center mb-4 sm:mb-0">

@@ -1,3 +1,5 @@
+import { get } from 'aws-amplify/api';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import {
     ArrowDownRight,
     ArrowUpRight,
@@ -41,27 +43,102 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
     const [selectedAsset, setSelectedAsset] = useState(null);
     const [formData, setFormData] = useState({ name: '', amount: '', category: 'Cash', description: '' });
     const [netWorthHistory, setNetWorthHistory] = useState([]);
+    const [isTrendLoading, setIsTrendLoading] = useState(false);
     const [activeFilter, setActiveFilter] = useState('Semua');
 
-    const totalNetWorth = useMemo(() => assets.reduce((sum, a) => sum + a.amount, 0), [assets]);
-
-    // Ambil data riwayat Total Net Worth
+    const totalNetWorth = useMemo(() => assets.reduce((sum, a) => sum + Number(a.amount || 0), 0), [assets]);    // Ambil data riwayat Total Net Worth
     useEffect(() => {
-        const fetchHistory = async () => {
+        const fetchTotalHistory = async () => {
+            // Jika user belum punya aset sama sekali
+            if (!assets || assets.length === 0) {
+                const currentMonthStr = new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+                setNetWorthHistory([{ date: currentMonthStr, totalAmount: totalNetWorth }]);
+                return;
+            }
+
+            setIsTrendLoading(true);
             try {
-                // Mock data untuk lingkungan pratinjau (preview)
-                const mockData = [
-                    { date: '2026-01-01', totalAmount: totalNetWorth * 0.8 },
-                    { date: '2026-02-01', totalAmount: totalNetWorth * 0.9 },
-                    { date: '2026-03-01', totalAmount: totalNetWorth * 0.95 },
-                    { date: '2026-04-01', totalAmount: totalNetWorth }
-                ];
-                setNetWorthHistory(mockData);
+                const authToken = (await fetchAuthSession()).tokens?.idToken?.toString();
+
+                // 1. Tarik riwayat semua aset secara paralel (bersamaan) agar cepat
+                const historyPromises = assets.map(async (asset) => {
+                    try {
+                        const response = await get({
+                            apiName: 'ExpenseTrackerAPI',
+                            path: `/assets/${asset.assetId}/history`,
+                            options: { headers: { Authorization: authToken } }
+                        }).response;
+                        const data = await response.body.json();
+
+                        // Sisipkan assetId agar kita tahu riwayat ini milik siapa
+                        return data.map(item => ({ ...item, assetId: asset.assetId }));
+                    } catch (err) {
+                        console.error(`Gagal mengambil riwayat untuk aset ${asset.assetId}`, err);
+                        return [];
+                    }
+                });
+
+                // Tunggu semua API selesai membalas
+                const historyResults = await Promise.all(historyPromises);
+                const rawHistory = historyResults.flat(); // Gabungkan jadi satu array panjang
+
+                // 2. Kelompokkan berdasarkan Bulan (YYYY-MM)
+                const monthlyAssetMap = {};
+
+                // Urutkan dari yang terlama ke terbaru
+                rawHistory.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+                rawHistory.forEach(item => {
+                    const monthKey = item.date.substring(0, 7); // Ambil "YYYY-MM"
+                    if (!monthlyAssetMap[monthKey]) {
+                        monthlyAssetMap[monthKey] = {};
+                    }
+                    // Selalu timpa dengan nominal paling update di bulan tersebut
+                    monthlyAssetMap[monthKey][item.assetId] = Number(item.amount);
+                });
+
+                // 3. Jumlahkan Total Aset di setiap bulan
+                const processedHistory = Object.keys(monthlyAssetMap).map(monthKey => {
+                    const assetsInMonth = monthlyAssetMap[monthKey];
+                    const monthTotal = Object.values(assetsInMonth).reduce((sum, val) => sum + val, 0);
+
+                    // Ubah YYYY-MM menjadi label cantik (Cth: "Apr 2026")
+                    const [year, month] = monthKey.split('-');
+                    const dateObj = new Date(year, month - 1);
+                    const formattedDate = dateObj.toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+
+                    return {
+                        monthKey,
+                        date: formattedDate,
+                        totalAmount: monthTotal
+                    };
+                });
+
+                // 4. Pastikan bulan ini selalu menampilkan angka real-time dari totalNetWorth
+                const currentMonthKey = new Date().toISOString().substring(0, 7);
+                const hasCurrentMonth = processedHistory.some(h => h.monthKey === currentMonthKey);
+
+                if (!hasCurrentMonth) {
+                    const currentFormatted = new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' });
+                    processedHistory.push({
+                        monthKey: currentMonthKey,
+                        date: currentFormatted,
+                        totalAmount: totalNetWorth
+                    });
+                } else {
+                    processedHistory[processedHistory.length - 1].totalAmount = totalNetWorth;
+                }
+
+                setNetWorthHistory(processedHistory);
+
             } catch (error) {
-                console.error("Error fetching net worth history", error);
+                console.error("Error mengagregasi riwayat net worth:", error);
+            } finally {
+                setIsTrendLoading(false);
             }
         };
-        fetchHistory();
+
+        fetchTotalHistory();
     }, [assets, totalNetWorth]);
 
     const chartData = useMemo(() => {
@@ -78,13 +155,28 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
     }, [chartData]);
 
     // Calculating Wealth Growth Trends (Based on initial vs. latest data)
+    // Calculating Wealth Growth Trends
     const trend = useMemo(() => {
-        if (netWorthHistory.length < 1 || totalNetWorth === 0) return null;
-        const oldestValue = netWorthHistory[0].totalAmount;
-        if (oldestValue === 0) return null;
-        const diff = totalNetWorth - oldestValue;
-        const percent = (diff / oldestValue) * 100;
-        return { diff, percent, isPositive: diff >= 0 };
+        if (netWorthHistory.length === 0 || totalNetWorth === 0) return null;
+
+        // Jika riwayat baru ada 1 bulan, anggap pertumbuhannya 0%
+        if (netWorthHistory.length === 1) {
+            return { diff: 0, percent: 0, isPositive: true };
+        }
+
+        // Ambil nominal di akhir bulan SEBELUMNYA
+        const previousMonthValue = netWorthHistory[netWorthHistory.length - 2].totalAmount;
+
+        if (previousMonthValue === 0) return null;
+
+        const diff = totalNetWorth - previousMonthValue;
+        const percent = (diff / previousMonthValue) * 100;
+
+        return {
+            diff,
+            percent: Math.abs(percent),
+            isPositive: diff >= 0
+        };
     }, [netWorthHistory, totalNetWorth]);
 
     // Logika Filter
@@ -150,12 +242,21 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
                             <h2 className="text-4xl md:text-5xl font-extrabold text-slate-800 tracking-tight">
                                 {formatIDR(totalNetWorth)}
                             </h2>
-                            {trend && (
+
+                            {/* --- PERUBAHAN DI SINI: Menambahkan isTrendLoading --- */}
+                            {isTrendLoading ? (
+                                <div className="inline-flex items-center gap-2 mt-3 px-3 py-1 rounded-full text-sm font-semibold bg-slate-100 text-slate-500 animate-pulse">
+                                    <span className="w-3.5 h-3.5 border-2 border-slate-300 border-t-slate-500 rounded-full animate-spin"></span>
+                                    <span>Menghitung tren...</span>
+                                </div>
+                            ) : trend && (
                                 <div className={`inline-flex items-center gap-1.5 mt-3 px-3 py-1 rounded-full text-sm font-semibold ${trend.isPositive ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
                                     {trend.isPositive ? <ArrowUpRight size={16} /> : <ArrowDownRight size={16} />}
                                     <span>{trend.isPositive ? '+' : ''}{formatIDR(trend.diff)} ({trend.percent.toFixed(1)}%)</span>
                                 </div>
                             )}
+                            {/* ---------------------------------------------------- */}
+
                         </div>
                         <button
                             onClick={() => { setIsFormVisible(true); setSelectedAsset(null); setFormData({ name: '', amount: '', category: 'Cash', description: '' }); }}
@@ -180,7 +281,7 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
                                     <YAxis domain={['auto', 'auto']} hide />
                                     <Tooltip
                                         formatter={(value) => formatIDR(value)}
-                                        labelFormatter={(l) => new Date(l).toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })}
+                                        labelFormatter={(l) => l} // Menggunakan label 'date' ("Apr 2026") yang sudah kita format sebelumnya
                                         contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}
                                     />
                                     <Area type="monotone" dataKey="totalAmount" stroke="#3B82F6" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" />
@@ -188,7 +289,7 @@ export default function AssetManager({ assets, onAdd, onUpdate, onDelete }) {
                             </ResponsiveContainer>
                         ) : (
                             <div className="h-full flex items-center justify-center text-slate-400 text-sm font-medium bg-slate-50/50 rounded-xl border border-dashed border-slate-200 mx-2">
-                                Grafik pertumbuhan akan muncul setelah ada pembaruan nilai aset.
+                                Grafik pertumbuhan akan muncul setelah ada pembaruan nilai aset bulan depan.
                             </div>
                         )}
                     </div>
