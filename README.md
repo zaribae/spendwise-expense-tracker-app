@@ -2,7 +2,7 @@
 
 DompetHub is a modern, serverless web application designed to help you track your expenses and income effortlessly. Leveraging the power of AI, you can add transactions using natural language via the Web Dashboard or our Telegram Bot. The application provides insightful daily and monthly financial overviews, with all data securely stored in the cloud.
 
-You can try the app here: [https://dompethub.app](https://dompethub.app)
+You can try the app here: [https://dompethub.tech](https://dompethub.tech)
 
 ## Features
 

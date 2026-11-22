@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dompethub.app/sitemap.xml
+Sitemap: https://dompethub.tech/sitemap.xml
